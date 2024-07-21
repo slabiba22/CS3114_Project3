@@ -57,7 +57,7 @@ public class Hash {
         int pos = home = h(k);
         int firstTS = -1;
 
-        for (int i = 1; EMPTYKEY != table[pos].key(); i++) {
+        for (int i = 1; table[pos] != null && EMPTYKEY != table[pos].key(); i++) {
             if (k == table[pos].key()) {
                 System.out.println("Duplicates not allowed");
                 return;
@@ -156,6 +156,49 @@ public class Hash {
         if (pos != -1 && table[pos] != null && table[pos].key() == k) {
             table[pos].key = TOMBSTONE;
             elemNum--;
+        }
+    }
+    
+    private static class KVPair {
+        int key;
+        Handle handle;
+
+        // ----------------------------------------------------------
+        /**
+         * Create a new KVPair object.
+         * 
+         * @param key
+         *            the seminar ID
+         * @param handle
+         *            record in the memory pool
+         */
+        // ~ Constructors ..........................................................
+        public KVPair(int key, Handle handle) {
+            this.key = key;
+            this.handle = handle;
+        }
+
+
+        // ----------------------------------------------------------
+        /**
+         * Getter method for the key
+         * 
+         * @return the seminar ID
+         */
+        // ~Public Methods ........................................................
+
+        public int key() {
+            return key;
+        }
+
+        // ----------------------------------------------------------
+        /**
+         * Getter method for handle associated with the record in the memoryu pool.Ï
+         * 
+         * @return the handle to the associated record
+         */
+        public Handle handle() {
+            return handle;
         }
     }
 

@@ -33,14 +33,18 @@ public class Hash {
     // ~Public Methods ........................................................
     // simple hash function from openDSA
     private int h(int x) {
-        return x % size;
+        return Math.abs(x % size);
     }
+    
+    
 
 
     // quadratic probing from openDSA
     private int p(int k, int i) {
         return ((i * i) + i) / 2;
     }
+    
+    
 
 
     // ----------------------------------------------------------
@@ -52,24 +56,51 @@ public class Hash {
      * @param handle
      *            reference to the record
      */
+//    public void hashInsert(int k, Handle handle) {
+//        int home;
+//        int pos = home = h(k);
+//        int firstTS = -1;
+//
+//        for (int i = 1; table[pos] != null && EMPTYKEY != table[pos].key(); i++) {
+//            if (k == table[pos].key()) {
+//                System.out.println("Duplicates not allowed");
+//                return;
+//            }
+//            if (table[pos].key() == TOMBSTONE && firstTS == -1) {
+//                firstTS = pos; // Remember the first tombstone position
+//            }
+//            pos = (home + p(k, i)) % size;
+//        }
+//
+//        if (firstTS != -1) {
+//            pos = firstTS; // Insert at the position of the first tombstone
+//        }
+//        table[pos] = new KVPair(k, handle);
+//        elemNum++;
+//
+//        if (elemNum > size / 2) {
+//            rehash();
+//        }
+//    }
+    
     public void hashInsert(int k, Handle handle) {
         int home;
         int pos = home = h(k);
         int firstTS = -1;
 
-        for (int i = 1; table[pos] != null && EMPTYKEY != table[pos].key(); i++) {
+        for (int i = 1; table[pos] != null && table[pos].key() != EMPTYKEY; i++) {
             if (k == table[pos].key()) {
                 System.out.println("Duplicates not allowed");
                 return;
             }
             if (table[pos].key() == TOMBSTONE && firstTS == -1) {
-                firstTS = pos; // Remember the first tombstone position
+                firstTS = pos;
             }
             pos = (home + p(k, i)) % size;
         }
 
         if (firstTS != -1) {
-            pos = firstTS; // Insert at the position of the first tombstone
+            pos = firstTS;
         }
         table[pos] = new KVPair(k, handle);
         elemNum++;
@@ -105,21 +136,36 @@ public class Hash {
     }
 
 
+//    private int findPos(int k) {
+//        int home;
+//        int pos = home = h(k); // compute initial position
+//
+//        // loop using the quadratic probing
+//        for (int i = 1; k != (table[pos]).key() && (EMPTYKEY != (table[pos])
+//            .key()); i++) {
+//
+//            pos = (home + p(k, i)) % size;
+//        }
+//        if (table[pos] != null && table[pos].key() == k) {
+//            return pos; // if key is found return the position of the key
+//        }
+//        return -1; // Return -1 if the key is not found
+//    }
+    
     private int findPos(int k) {
         int home;
         int pos = home = h(k); // compute initial position
 
-        // loop using the quadratic probing
-        for (int i = 1; k != (table[pos]).key() && (EMPTYKEY != (table[pos])
-            .key()); i++) {
-
+        for (int i = 1; table[pos] != null && table[pos].key() != EMPTYKEY; i++) {
+            if (k == table[pos].key()) {
+                return pos; // Key found
+            }
             pos = (home + p(k, i)) % size;
         }
-        if (table[pos] != null && table[pos].key() == k) {
-            return pos; // if key is found return the position of the key
-        }
-        return -1; // Return -1 if the key is not found
+        return -1; // Key not found
     }
+    
+    
 
 
     // ----------------------------------------------------------
@@ -130,18 +176,28 @@ public class Hash {
      *            given key
      * @return returns the record if it was found, else null
      */
-    public Handle hashSearch(int k)
-
-    {
+//    public Handle hashSearch(int k)
+//
+//    {
+//        int pos = findPos(k);
+//        // if key is found, return the associated record
+//        if (pos != -1 && table[pos] != null && k == (table[pos]).key()) {
+//            return table[pos].handle();
+//        }
+//
+//        return null;
+//
+//    }
+    
+    public Handle hashSearch(int k) {
         int pos = findPos(k);
-        // if key is found, return the associated record
-        if (pos != -1 && table[pos] != null && k == (table[pos]).key()) {
+        if (pos != -1 && table[pos] != null && k == table[pos].key()) {
             return table[pos].handle();
         }
-
         return null;
-
     }
+    
+    
 
 
     // ----------------------------------------------------------
@@ -151,10 +207,18 @@ public class Hash {
      * @param k
      *            is the given key
      */
+//    public void hashDelete(int k) {
+//        int pos = findPos(k);
+//        if (pos != -1 && table[pos] != null && table[pos].key() == k) {
+//            table[pos].key = TOMBSTONE;
+//            elemNum--;
+//        }
+//    }
+    
     public void hashDelete(int k) {
         int pos = findPos(k);
         if (pos != -1 && table[pos] != null && table[pos].key() == k) {
-            table[pos].key = TOMBSTONE;
+            table[pos] = new KVPair(TOMBSTONE, null);
             elemNum--;
         }
     }
